@@ -2892,7 +2892,12 @@ static void qsap_handle_set_request(s8 *pcmd, s8 *presp, u32 *plen)
             cNum = STR_AP_ENERGY_DETECT_TH;
             ini = INI_CONF_FILE;
             break;
-
+        case eCMD_SET_CHANNEL_RANGE:
+            LOGE("eCMD_SET_CHANNEL_RANGE pcmd :%s\n", pcmd);
+            value = qsap_set_channel_range(pcmd);
+           *plen = snprintf(presp, *plen, "%s", (value == eSUCCESS) ? SUCCESS :
+                             ERR_UNKNOWN);
+            return;
         default: ;
             /** Do not goto error, in default case */
     }
