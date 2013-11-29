@@ -1069,7 +1069,7 @@ static int qsap_read_mac_address(s8 *presp, u32 *plen)
     if(NULL == ptr)
         goto end;
 
-    strncpy(mac, ptr+1, MAC_ADDR_LEN);
+    strlcpy(mac, ptr+1, MAC_ADDR_LEN);
     *plen = snprintf(presp, len, "%s %s=", SUCCESS, cmd_list[eCMD_MAC_ADDR].name);
     ptr = presp + strlen(presp);
         
@@ -1168,7 +1168,7 @@ int qsap_get_operating_channel(s32 *pchan)
 
     *pchan = 0;
 
-    strncpy(wrq.ifr_name, pif, sizeof(wrq.ifr_name));
+    strlcpy(wrq.ifr_name, pif, sizeof(wrq.ifr_name));
     wrq.u.data.length = sizeof(s32);
     wrq.u.data.pointer = pchan;
     wrq.u.data.flags = 0;
@@ -1230,7 +1230,7 @@ int qsap_get_sap_auto_channel_selection(s32 *pautochan)
     memset(&sap_autochan_info, 0, sizeof(sap_autochan_info));
     memset(&wrq, 0, sizeof(wrq));
 
-    strncpy(wrq.ifr_name, pif, sizeof(wrq.ifr_name));
+    strlcpy(wrq.ifr_name, pif, sizeof(wrq.ifr_name));
     wrq.u.data.length = sizeof(s32);
     sap_autochan_info.subioctl = QCSAP_PARAM_GET_AUTO_CHANNEL;
     wrq.u.data.pointer = pautochan;
@@ -1350,7 +1350,7 @@ int qsap_set_channel_range(s8 *buf)
     memset(&wrq, 0, sizeof(wrq));
 
     if (ENABLE != is_softap_enabled()) {
-        strncpy(wrq.ifr_name, "wlan0", sizeof(wrq.ifr_name));
+        strlcpy(wrq.ifr_name, "wlan0", sizeof(wrq.ifr_name));
         sta_chan_range.subioctl = WE_SET_SAP_CHANNELS;
         sscanf(temp, "%d %d %d", &(sta_chan_range.stastartchan),
                 &(sta_chan_range.staendchan), &(sta_chan_range.staband));
@@ -1360,7 +1360,7 @@ int qsap_set_channel_range(s8 *buf)
                 __func__);
         ret = ioctl(sock, WLAN_PRIV_SET_THREE_INT_GET_NONE, &wrq);
     } else {
-          strncpy(wrq.ifr_name, pif, sizeof(wrq.ifr_name));
+          strlcpy(wrq.ifr_name, pif, sizeof(wrq.ifr_name));
           sscanf(temp, "%d %d %d", &(sap_chan_range.startchan),
                   &(sap_chan_range.endchan), &(sap_chan_range.band));
           memcpy(wrq.u.name, (char *)(&sap_chan_range), sizeof(sap_chan_range));
@@ -1483,7 +1483,7 @@ void qsap_get_associated_sta_mac(s8 *presp, u32 *plen)
 
 
 #define SIZE_OF_MAC_INT   (6)
-    strncpy(wrq.ifr_name, pif, sizeof(wrq.ifr_name));
+    strlcpy(wrq.ifr_name, pif, sizeof(wrq.ifr_name));
     wrq.u.data.length = SIZE_OF_MAC_INT * 8 + 8; /** 8 supported MAC and 7 SPACE separators and a '\0' */
     wrq.u.data.pointer = (void *)pbuf;
     wrq.u.data.flags = 0;
@@ -1581,7 +1581,7 @@ void qsap_read_ap_stats(s8 *presp, u32 *plen)
         goto error;
     }
 
-    strncpy(wrq.ifr_name, pif, sizeof(wrq.ifr_name));
+    strlcpy(wrq.ifr_name, pif, sizeof(wrq.ifr_name));
     wrq.u.data.length = MAX_RESP_LEN;
     wrq.u.data.pointer = (void *)pbuf;
     wrq.u.data.flags = 0;
@@ -2292,7 +2292,7 @@ void qsap_disassociate_sta(s8 *pVal, s8 *presp, u32 *plen)
         goto end;
     }
 
-    strncpy(wrq.ifr_name, pif, sizeof(wrq.ifr_name));
+    strlcpy(wrq.ifr_name, pif, sizeof(wrq.ifr_name));
 
     if (TRUE != qsap_get_mac_in_bytes(pVal, (char *) &wrq.u)) {
         ALOGE("%s: Invalid input \n", __func__);
