@@ -3089,6 +3089,7 @@ int qsapsetSoftap(int argc, char *argv[])
             return -1;
         }
     }
+#ifndef ANDROID_VERSION_KITKAT
     /** channel */
     rlen = RECV_BUF_LEN;
     if(argc > 5) {
@@ -3100,7 +3101,7 @@ int qsapsetSoftap(int argc, char *argv[])
             return -1;
         }
     }
-
+#endif
     /** Security */
     rlen = RECV_BUF_LEN;
     if(argc > 6) {
