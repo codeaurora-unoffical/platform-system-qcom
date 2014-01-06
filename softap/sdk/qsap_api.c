@@ -1350,8 +1350,13 @@ int qsap_set_channel_range(s8 *buf)
     if (ENABLE != is_softap_enabled()) {
         strncpy(wrq.ifr_name, "wlan0", sizeof(wrq.ifr_name));
         sta_chan_range.subioctl = WE_SET_SAP_CHANNELS;
-        sscanf(temp, "%d %d %d", &(sta_chan_range.stastartchan),
+        ret = sscanf(temp, "%d %d %d", &(sta_chan_range.stastartchan),
                 &(sta_chan_range.staendchan), &(sta_chan_range.staband));
+        if (3 != ret) {
+            ALOGE("%s : sscanf is not successful\n", __func__);
+            close(sock);
+            goto error;
+        }
         memcpy(wrq.u.name, (char *)(&sta_chan_range), sizeof(sta_chan_range));
 
         ALOGE("%s :Softap is off,Send SET_CHANNEL_RANGE over sta interface\n",
@@ -1359,8 +1364,13 @@ int qsap_set_channel_range(s8 *buf)
         ret = ioctl(sock, WLAN_PRIV_SET_THREE_INT_GET_NONE, &wrq);
     } else {
           strncpy(wrq.ifr_name, pif, sizeof(wrq.ifr_name));
-          sscanf(temp, "%d %d %d", &(sap_chan_range.startchan),
+          ret = sscanf(temp, "%d %d %d", &(sap_chan_range.startchan),
                   &(sap_chan_range.endchan), &(sap_chan_range.band));
+          if (3 != ret) {
+              ALOGE("%s : sscanf is not successful\n", __func__);
+              close(sock);
+              goto error;
+          }
           memcpy(wrq.u.name, (char *)(&sap_chan_range), sizeof(sap_chan_range));
 
           ALOGE("%s :SAP is on,Send SET_CHANNEL_RANGE over softap interface\n",
@@ -3045,7 +3055,6 @@ void qsap_hostd_exec_cmd(s8 *pcmd, s8 *presp, u32 *plen)
     argv[5] = CHANNEL
     argv[6] = SECURITY,
     argv[7] = KEY,
-    argv[8] = COMMIT,
 */
 int qsapsetSoftap(int argc, char *argv[])
 {
@@ -3053,6 +3062,7 @@ int qsapsetSoftap(int argc, char *argv[])
     char respbuf[RECV_BUF_LEN];
     unsigned long int rlen = RECV_BUF_LEN;
     int i;
+    int hidden = 0;
     int sec = SEC_MODE_NONE;
 
     ALOGD("%s, %s, %s, %d\n", __FUNCTION__, argv[0], argv[1], argc);
@@ -3077,7 +3087,10 @@ int qsapsetSoftap(int argc, char *argv[])
 
     rlen = RECV_BUF_LEN;
     if (argc > 4) {
-        snprintf(cmdbuf, CMD_BUF_LEN, "set ignore_broadcast_ssid=%d", atoi(argv[4]));
+        if (strcmp(argv[4], "hidden") == 0) {
+             hidden = 1;
+        }
+        snprintf(cmdbuf, CMD_BUF_LEN, "set ignore_broadcast_ssid=%d", hidden);
         (void) qsap_hostd_exec_cmd(cmdbuf, respbuf, &rlen);
         if(strncmp("success", respbuf, rlen) != 0) {
             ALOGE("Failed to set ignore_broadcast_ssid \n");
