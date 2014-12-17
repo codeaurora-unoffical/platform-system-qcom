@@ -329,6 +329,7 @@ typedef enum esap_cmd {
     eCMD_VHT_OPER_CH_WIDTH   = 68,
     eCMD_ACS_CHAN_LIST       = 69,
     eCMD_HT_CAPAB            = 70,
+    eCMD_INTERFACE           = 71,
 
     eCMD_LAST     /** New command numbers should be added above this */
 } esap_cmd_t;
@@ -585,6 +586,8 @@ int qsap_hostd_exec(int argc, char ** argv);
 void qsap_hostd_exec_cmd(s8 *pcmd, s8 *presp, u32 *plen);
 s8 *qsap_get_config_value(s8 *pfile, struct Command *pcmd, s8 *pbuf, u32 *plen);
 int qsapsetSoftap(int argc, char *argv[]);
+int qsap_create_intf(const char *softap_iface);
+int qsap_remove_intf(const char *softap_iface);
 void qsap_del_ctrl_iface(void);
 s16 wifi_qsap_reset_to_default(s8 *pcfgfile, s8 *pdefault);
 void check_for_configuration_files(void);
