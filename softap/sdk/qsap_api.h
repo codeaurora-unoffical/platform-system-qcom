@@ -324,6 +324,7 @@ typedef enum esap_cmd {
     eCMD_GET_AUTO_CHANNEL    = 63,
     eCMD_IEEE80211W          = 64,
     eCMD_WPA_KEY_MGMT        = 65,
+    eCMD_INTERFACE           = 66,
 
     eCMD_LAST     /** New command numbers should be added above this */
 } esap_cmd_t;
@@ -579,6 +580,8 @@ typedef struct sap_auto_channel_info {
 void qsap_hostd_exec_cmd(s8 *pcmd, s8 *presp, u32 *plen);
 s8 *qsap_get_config_value(s8 *pfile, struct Command *pcmd, s8 *pbuf, u32 *plen);
 int qsapsetSoftap(int argc, char *argv[]);
+int qsap_create_intf(const char *softap_iface);
+int qsap_remove_intf(const char *softap_iface);
 void qsap_del_ctrl_iface(void);
 s16 wifi_qsap_reset_to_default(s8 *pcfgfile, s8 *pdefault);
 void check_for_configuration_files(void);
