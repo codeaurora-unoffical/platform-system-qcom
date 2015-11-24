@@ -330,6 +330,7 @@ typedef enum esap_cmd {
     eCMD_ACS_CHAN_LIST       = 69,
     eCMD_HT_CAPAB            = 70,
     eCMD_INTERFACE           = 71,
+    eCMD_IEEE80211H          = 72,
 
     eCMD_LAST     /** New command numbers should be added above this */
 } esap_cmd_t;
@@ -580,6 +581,9 @@ typedef struct sap_auto_channel_info {
 
 /** Validate the AP shutoff time */
 #define IS_VALID_ENERGY_DETECT_TH(x) ((((x >= AP_ENERGY_DETECT_TH_MIN) && (x <= AP_ENERGY_DETECT_TH_MAX)) ||( x == 128)) ? TRUE : FALSE)
+
+/** Validate the 802dot11h state */
+#define IS_VALID_DFS_STATE(x) (((x == ENABLE) || (x == DISABLE)) ? TRUE: FALSE)
 
 /** Function declartion */
 int qsap_hostd_exec(int argc, char ** argv);

@@ -165,6 +165,7 @@ static struct Command cmd_list[eCMD_LAST] = {
     { "chanlist",              NULL             },
     { "ht_capab",              NULL             },
     { "interface",             NULL             },
+    { "ieee80211h",            NULL             },
 };
 
 struct Command qsap_str[eSTR_LAST] = {
@@ -1761,6 +1762,7 @@ static void qsap_get_from_config(esap_cmd_t cNum, s8 *presp, u32 *plen)
         case eCMD_FRAG_THRESHOLD:
         case eCMD_REGULATORY_DOMAIN:
         case eCMD_RTS_THRESHOLD:
+        case eCMD_IEEE80211H:
                 qsap_read_cfg(pconffile, &cmd_list[cNum], presp, plen, NULL, GET_ENABLED_ONLY);
                 break;
 
@@ -3017,6 +3019,15 @@ static void qsap_handle_set_request(s8 *pcmd, s8 *presp, u32 *plen)
             cNum = STR_AP_ENERGY_DETECT_TH;
             ini = INI_CONF_FILE;
             break;
+
+        case eCMD_IEEE80211H:
+            value = atoi(pVal);
+            if(TRUE != IS_VALID_DFS_STATE(value))
+                goto error;
+
+            qsap_scnprintf(pVal, strlen(pVal)+1, "%ld", value);
+            break;
+
         case eCMD_SET_CHANNEL_RANGE:
             ALOGE("eCMD_SET_CHANNEL_RANGE pcmd :%s\n", pcmd);
             value = qsap_set_channel_range(pcmd);
