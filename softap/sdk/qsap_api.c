@@ -43,7 +43,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <private/android_filesystem_config.h>
 #include <net/if.h>
 #include <net/if_arp.h>
 #include <netlink/netlink.h>
@@ -67,8 +66,8 @@
 
 #define LOG_TAG "QCSDK"
 
-#include "cutils/properties.h"
-#include "cutils/log.h"
+#include <cutils/properties.h>
+#include <cutils/log.h>
 
 #define SKIP_BLANK_SPACE(x) {while(*x != '\0') { if((*x == ' ') || (*x == '\t')) x++; else break; }}
 
@@ -208,7 +207,7 @@ struct Command qsap_str[eSTR_LAST] = {
 
 /** Supported operating mode */
 char *hw_mode[HW_MODE_UNKNOWN] = {
-    "b", "g", "n", "g-only", "n-only", "a"
+    "b", "g", "n", "g-only", "n-only", "a", "any"
 };
 
 /** configuration file path */
@@ -2374,6 +2373,10 @@ static int qsap_set_channel(s32 channel, s8 *tbuf, u32 *tlen)
 
     ulen = *tlen;
 
+    /* Do not worry about hw_mode if intention is to use ACS (channel=0) */
+    if (channel == 0)
+        goto end;
+
     /** Read the current operating mode */
     if(NULL == (pcfgval = qsap_get_config_value(pconffile, &cmd_list[eCMD_HW_MODE], tbuf, &ulen))) {
         return eERR_UNKNOWN;
@@ -2410,6 +2413,7 @@ static int qsap_set_channel(s32 channel, s8 *tbuf, u32 *tlen)
         }
     }
 
+end:
     qsap_scnprintf(schan, sizeof(schan), "%ld", channel);
 
     return qsap_write_cfg(pcfg, &cmd_list[eCMD_CHAN], schan, tbuf, tlen, HOSTAPD_CONF_QCOM_FILE);
@@ -2443,6 +2447,7 @@ static int qsap_set_operating_mode(s32 mode, s8 *pmode, int pmode_len, s8 *tbuf,
         case HW_MODE_N:
         case HW_MODE_G:
         case HW_MODE_A:
+        case HW_MODE_ANY:
             ulen = *tlen;
             qsap_write_cfg(pcfg, &cmd_list[eCMD_IEEE80211N],ieee11n_enable, tbuf, &ulen, HOSTAPD_CONF_QCOM_FILE);
             break;
