@@ -181,6 +181,11 @@ static struct Command cmd_list[eCMD_LAST] = {
     { "ctrl_interface",        NULL             },
     { "vendor_elements",       NULL             },
     { "assocresp_elements",    NULL             },
+    { "acs_exclude_dfs",       NULL             },
+    { "wowlan_triggers",       "any"            },
+    { "accept_mac_file",       NULL             },
+    { "deny_mac_file",         NULL             },
+
 };
 
 struct Command qsap_str[eSTR_LAST] = {
@@ -1348,6 +1353,12 @@ int qsap_get_mode(s32 *pmode)
     //allocate socket
     sk = nl_socket_alloc();
 
+    //return if socket allocation fails
+    if(sk == NULL){
+       ALOGE( "socket allocation failure");
+       return ret;
+    }
+
     //connect to generic netlink
     if (genl_connect(sk)) {
         ALOGE( "Netlink socket Connection failure");
@@ -1364,6 +1375,12 @@ int qsap_get_mode(s32 *pmode)
 
     //allocate a message
     msg = nlmsg_alloc();
+
+    //return if message allocation fails
+    if(msg == NULL){
+       ALOGE( "message allocation failure");
+       goto nla_put_failure;
+    }
 
     // setup the message
     genlmsg_put(msg, 0, 0, nl80211_id, 0, 0, NL80211_CMD_GET_INTERFACE, 0);
@@ -3161,8 +3178,6 @@ void qsap_hostd_exec_cmd(s8 *pcmd, s8 *presp, u32 *plen)
     }
 
     check_for_configuration_files();
-    if(fIni == NULL)
-        qsap_set_ini_filename();
 
     if(!strncmp(pcmd, Cmd_req[eCMD_GET], strlen(Cmd_req[eCMD_GET])) && isblank(pcmd[strlen(Cmd_req[eCMD_GET])])) {
         qsap_handle_get_request(pcmd, presp, plen);
