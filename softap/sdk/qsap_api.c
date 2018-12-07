@@ -1347,6 +1347,12 @@ int qsap_get_mode(s32 *pmode)
     //allocate socket
     sk = nl_socket_alloc();
 
+    if (sk == NULL ) {
+        ALOGE( "nl_socket_alloc failure");
+        ret = eERR_UNKNOWN;
+        goto nla_put_failure;
+    }
+
     //connect to generic netlink
     if (genl_connect(sk)) {
         ALOGE( "Netlink socket Connection failure");
@@ -1363,6 +1369,12 @@ int qsap_get_mode(s32 *pmode)
 
     //allocate a message
     msg = nlmsg_alloc();
+
+    if (msg == NULL ) {
+        ALOGE( "nlmsg_alloc failure");
+        ret = eERR_UNKNOWN;
+        goto nla_put_failure;
+    }
 
     // setup the message
     genlmsg_put(msg, 0, 0, nl80211_id, 0, 0, NL80211_CMD_GET_INTERFACE, 0);
