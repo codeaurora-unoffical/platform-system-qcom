@@ -99,16 +99,16 @@ enum error_val {
 #define CONFIG_FILE "/data/vendor/wifi/hostapd/hostapd.conf"
 
 /** Default configuration file path */
-#define DEFAULT_CONFIG_FILE_PATH "/system/etc/hostapd/hostapd_default.conf"
+#define DEFAULT_CONFIG_FILE_PATH "/vendor/etc/hostapd/hostapd_default.conf"
 
 /** Default Accept list file name */
-#define DEFAULT_ACCEPT_LIST_FILE_PATH "/system/etc/hostapd/hostapd.accept"
+#define DEFAULT_ACCEPT_LIST_FILE_PATH "/vendor/etc/hostapd/hostapd.accept"
 
 /** Accept list file name */
 #define ACCEPT_LIST_FILE "/data/vendor/wifi/hostapd/hostapd.accept"
 
 /** Default Deny list file name */
-#define DEFAULT_DENY_LIST_FILE_PATH "/system/etc/hostapd/hostapd.deny"
+#define DEFAULT_DENY_LIST_FILE_PATH "/vendor/etc/hostapd/hostapd.deny"
 
 /** Deny list file name */
 #define DENY_LIST_FILE "/data/vendor/wifi/hostapd/hostapd.deny"
@@ -359,6 +359,7 @@ typedef enum esap_cmd {
     eCMD_ACCEPT_MAC_FILE     = 81,
     eCMD_DENY_MAC_FILE       = 82,
     eCMD_OWE_TRANS_IFNAME    = 83,
+    eCMD_SAE_REQUIRE_MPF     = 84,
 
     eCMD_LAST     /** New command numbers should be added above this */
 } esap_cmd_t;
