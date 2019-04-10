@@ -1345,7 +1345,11 @@ int qsap_get_mode(s32 *pmode)
     interface[len] = '\0';
 
     //allocate socket
-    sk = nl_socket_alloc();
+    if(NULL == (sk = nl_socket_alloc())) {
+        ALOGE("%s :Netlink socket fail to alloc \n", __func__);
+        ret = eERR_UNKNOWN;
+        goto nla_put_failure;
+    }
 
     if (sk == NULL ) {
         ALOGE( "nl_socket_alloc failure");
@@ -1368,7 +1372,11 @@ int qsap_get_mode(s32 *pmode)
             iftypeCallback, &if_type);
 
     //allocate a message
-    msg = nlmsg_alloc();
+    if(NULL == (msg = nlmsg_alloc())) {
+        ALOGE("%s :Netlink msg fail to alloc \n", __func__);
+        ret = eERR_UNKNOWN;
+        goto nla_put_failure;
+    }
 
     if (msg == NULL ) {
         ALOGE( "nlmsg_alloc failure");
