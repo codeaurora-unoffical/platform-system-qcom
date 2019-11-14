@@ -369,6 +369,9 @@ typedef enum esap_cmd {
 
     eCMD_IEEE80211AX         = 89,
 
+    eCMD_ENABLE_EDMG         = 90,
+    eCMD_EDMG_CHANNEL        = 91,
+
     eCMD_LAST     /** New command numbers should be added above this */
 } esap_cmd_t;
 

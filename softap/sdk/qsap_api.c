@@ -194,6 +194,8 @@ static struct Command cmd_list[eCMD_LAST] = {
     { "acs_exclude_6ghz_non_psc", "0"           },
     { "he_oper_chwidth",      NULL              },
     { "ieee80211ax",           NULL             },
+    { "enable_edmg",           NULL             },
+    { "edmg_channel",          NULL             },
 
 };
 
