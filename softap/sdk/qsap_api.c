@@ -191,6 +191,7 @@ static struct Command cmd_list[eCMD_LAST] = {
     { "op_class",              "0"              },
     { "freqlist",              NULL             },
     { "acs_exclude_6ghz_non_psc", "0"           },
+    { "he_oper_chwidth",      NULL              },
 
 };
 
