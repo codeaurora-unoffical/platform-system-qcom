@@ -363,6 +363,7 @@ typedef enum esap_cmd {
     eCMD_OPER_CLASS          = 85,
     eCMD_ACS_FREQ_LIST       = 86,
     eCMD_ACS_EXCLUDE_6GHZ_NON_PSC = 87,
+    eCMD_HE_OPER_CH_WIDTH   = 88,
 
     eCMD_LAST     /** New command numbers should be added above this */
 } esap_cmd_t;
