@@ -188,6 +188,10 @@ static struct Command cmd_list[eCMD_LAST] = {
     { "deny_mac_file",         NULL             },
     { "owe_transition_ifname", NULL             },
     { "sae_require_mfp",       NULL             },
+    { "op_class",              "0"              },
+    { "freqlist",              NULL             },
+    { "acs_exclude_6ghz_non_psc", "0"           },
+    { "he_oper_chwidth",      NULL              },
 
 };
 
@@ -3139,6 +3143,15 @@ static void qsap_handle_set_request(s8 *pcmd, s8 *presp, u32 *plen)
             /* Disable ssid while setting ssid2 */
             qsap_change_cfg(pcfg, &cmd_list[eCMD_SSID], DISABLE);
             break;
+
+        case eCMD_OPER_CLASS:
+            value = atoi(pVal);
+            if(value == 0) {
+            /* Disable oper_class if 2G or 5G band is selected */
+                qsap_change_cfg(pcfg, &cmd_list[eCMD_OPER_CLASS], DISABLE);
+                return;
+            }
+            else break;
 
         default: ;
             /** Do not goto error, in default case */
