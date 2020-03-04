@@ -91,7 +91,8 @@ s8 *Cmd_req[eCMD_REQ_LAST] = {
 s8 *Conf_req[CONF_REQ_LAST] = {
     "dual2g",
     "dual5g",
-    "owe"
+    "owe",
+    "60g",
 };
 
 /*
@@ -192,6 +193,9 @@ static struct Command cmd_list[eCMD_LAST] = {
     { "freqlist",              NULL             },
     { "acs_exclude_6ghz_non_psc", "0"           },
     { "he_oper_chwidth",      NULL              },
+    { "ieee80211ax",           NULL             },
+    { "enable_edmg",           NULL             },
+    { "edmg_channel",          NULL             },
 
 };
 
@@ -421,6 +425,19 @@ static s32 qsap_write_cfg(s8 *pfile, struct Command * pcmd, s8 *pVal, s8 *presp,
     /** Remove the temporary file. Dont care the return value */
     unlink(buf);
 
+    fcfg = fopen(pfile, "r");
+    if (fcfg != NULL) {
+        if (fsync(fileno(fcfg))) {
+            ALOGE("%s : fsync on %s failed with error : %s \n", __func__, pfile, strerror(errno));
+            fclose(fcfg);
+            return eERR_UNKNOWN;
+        }
+        fclose(fcfg);
+    } else {
+        ALOGE("%s : unable to open %s \n", __func__, pfile);
+        return eERR_FILE_OPEN;
+    }
+
     /* chmod is needed because open() didn't set permisions properly */
     if (chmod(pfile, 0660) < 0) {
         ALOGE("Error changing permissions of %s to 0660: %s",
@@ -565,6 +582,19 @@ static s32 qsap_change_cfg(s8 *pfile, struct Command * pcmd, u32 status)
 
     /** Delete the temporary file */
     unlink(buf);
+
+    fcfg = fopen(pfile, "r");
+    if (fcfg != NULL) {
+        if (fsync(fileno(fcfg))) {
+            ALOGE("%s : fsync on %s failed with error : %s \n", __func__, pfile, strerror(errno));
+            fclose(fcfg);
+            return eERR_UNKNOWN;
+        }
+        fclose(fcfg);
+    } else {
+        ALOGE("%s : unable to open %s \n", __func__, pfile);
+        return eERR_UNKNOWN;
+    }
 
     /* chmod is needed because open() didn't set permisions properly */
     if (chmod(pfile, 0660) < 0) {
@@ -2613,6 +2643,9 @@ static void qsap_handle_set_request(s8 *pcmd, s8 *presp, u32 *plen)
     } else if (!(strncmp(pcmd, Conf_req[CONF_owe], strlen(Conf_req[CONF_owe])))) {
            pcmd += strlen(Conf_req[CONF_owe]);
            SKIP_BLANK_SPACE(pcmd);
+    } else if (!(strncmp(pcmd, Conf_req[CONF_60g], strlen(Conf_req[CONF_60g])))) {
+           pcmd += strlen(Conf_req[CONF_60g]);
+           SKIP_BLANK_SPACE(pcmd);
     } else {
 	    // DO NOTHING
     }
@@ -3198,6 +3231,8 @@ void qsap_hostd_exec_cmd(s8 *pcmd, s8 *presp, u32 *plen)
            pconffile = CONFIG_FILE_5G;
        } else if (!(strncmp(pcmd+4, Conf_req[CONF_owe], strlen(Conf_req[CONF_owe])))) {
            pconffile = CONFIG_FILE_OWE;
+       } else if (!(strncmp(pcmd+4, Conf_req[CONF_60g], strlen(Conf_req[CONF_60g])))) {
+           pconffile = CONFIG_FILE_60G;
        } else {
            pconffile = CONFIG_FILE;
        }
@@ -3256,10 +3291,11 @@ int qsapsetSoftap(int argc, char *argv[])
         ALOGD("ARG: %d - %s\n", i+1, argv[i]);
     }
 
-    // check if 2nd arg is dual2g/dual5g
+    // check if 2nd arg is dual2g/dual5g/owe/60g
     if (argc > 2
          && (strncmp(argv[2], Conf_req[CONF_2g], 4) == 0
-             || strncmp(argv[2], Conf_req[CONF_owe], 3) == 0)) {
+             || strncmp(argv[2], Conf_req[CONF_owe], 3) == 0
+             || strncmp(argv[2], Conf_req[CONF_60g], 3) == 0)) {
             snprintf(setCmd, SET_BUF_LEN, "set %s", argv[2]);
             offset = 1;
             argc--;
