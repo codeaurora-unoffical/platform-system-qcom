@@ -425,6 +425,19 @@ static s32 qsap_write_cfg(s8 *pfile, struct Command * pcmd, s8 *pVal, s8 *presp,
     /** Remove the temporary file. Dont care the return value */
     unlink(buf);
 
+    fcfg = fopen(pfile, "r");
+    if (fcfg != NULL) {
+        if (fsync(fileno(fcfg))) {
+            ALOGE("%s : fsync on %s failed with error : %s \n", __func__, pfile, strerror(errno));
+            fclose(fcfg);
+            return eERR_UNKNOWN;
+        }
+        fclose(fcfg);
+    } else {
+        ALOGE("%s : unable to open %s \n", __func__, pfile);
+        return eERR_FILE_OPEN;
+    }
+
     /* chmod is needed because open() didn't set permisions properly */
     if (chmod(pfile, 0660) < 0) {
         ALOGE("Error changing permissions of %s to 0660: %s",
@@ -569,6 +582,19 @@ static s32 qsap_change_cfg(s8 *pfile, struct Command * pcmd, u32 status)
 
     /** Delete the temporary file */
     unlink(buf);
+
+    fcfg = fopen(pfile, "r");
+    if (fcfg != NULL) {
+        if (fsync(fileno(fcfg))) {
+            ALOGE("%s : fsync on %s failed with error : %s \n", __func__, pfile, strerror(errno));
+            fclose(fcfg);
+            return eERR_UNKNOWN;
+        }
+        fclose(fcfg);
+    } else {
+        ALOGE("%s : unable to open %s \n", __func__, pfile);
+        return eERR_UNKNOWN;
+    }
 
     /* chmod is needed because open() didn't set permisions properly */
     if (chmod(pfile, 0660) < 0) {
